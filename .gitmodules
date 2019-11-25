@@ -1,0 +1,6 @@
+[submodule "pod-web"]
+	path = pod-web
+	url = https://github.com/EOS-CSX/pod-web.git
+[submodule "pod-web-backend"]
+	path = pod-web-backend
+	url = https://github.com/EOS-CSX/pod-web-backend.git
