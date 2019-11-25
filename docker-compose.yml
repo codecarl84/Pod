@@ -1,0 +1,90 @@
+# Use root/example as user/password credentials
+# https://hub.docker.com/_/mariadb
+# Mariadb cheat sheet https://gist.github.com/hofmannsven/9164408
+
+version: '3.3'
+
+networks:
+  pod-net:
+    driver: bridge
+
+
+volumes:
+  pod-data-volume:
+  pod-node-volume:
+  db_data:
+
+services:
+
+  pod-web:
+    #image: "node:8"
+    build:
+      context: ./pod-web 
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - pod-node-volume:/usr/src/app
+    ports:
+      - "3000:3000"
+    networks:
+      - pod-net 
+         
+       
+
+  db:
+    image: mariadb
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+      MYSQL_DATABASE: pod
+      MYSQL_USER: pod_user
+      MYSQL_PASSWORD: password
+    volumes:
+      - pod-data-volume:/var/lib/mysql
+    networks:
+      - pod-net
+    ports:
+      - 3307:3306
+     # - "${VLAN1_IP02}:3306:3306"
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+      #- "${VLAN1_IP02}:8080:8080"
+
+
+ 
+
+
+# https://github.com/nodejs/docker-node/blob/master/README.md#how-to-use-this-image
+  
+  #  command: "tail -f /dev/null"
+
+
+#################################
+#      Backend                 
+#################################  
+
+  pod-web-backend:
+    build: 
+      context: ./pod-web-backend
+      
+    container_name: pod-web-backend
+    #ports:
+     # - "3030:3030" 
+    #environment:
+     # PMA_HOST: db   
+    depends_on:
+      - db  
+    volumes:
+      - ./pod-web-backend:/app
+      - db_data:/var/lib/mariadb/data
+     
+    networks:
+     - pod-net  
+
+
+
+
+
